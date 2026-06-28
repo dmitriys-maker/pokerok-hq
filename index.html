@@ -83,6 +83,8 @@ background:linear-gradient(180deg,#fff 25%,#f0d3ff 65%,#ff8fe6);-webkit-backgrou
 .av{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:26px;flex-shrink:0;position:relative;overflow:hidden;
 background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.25),transparent 40%),linear-gradient(135deg,var(--ac,#8b5cf6),#2a1147);
 box-shadow:inset 0 -8px 16px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.35),0 0 22px var(--acGlow,rgba(139,92,246,.4))}
+.av img{width:100%;height:100%;object-fit:cover;border-radius:16px}
+.ae img{width:100%;height:100%;object-fit:cover;border-radius:9px}
 .emp h3{margin:0;font-size:15.5px}
 .emp .role{color:var(--muted);font-size:12px}
 .stat{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#84f3c4;font-weight:700;margin-top:3px}
@@ -246,6 +248,20 @@ const TEAM = [
   {id:'gambling',emoji:'🎰',name:'Гемблинг-эксперт',role:'Казино+покер · бонусы',color:'#f5b50a',resp:'Знает рынок: акции, бонусы, кешбек конкурентов.',prop:{tag:'P0 · гемблинг',txt:'Собрать таблицу бонусов/кешбека конкурентов в РФ.'}},
   {id:'clipper',emoji:'🎞️',name:'Нарезчик',role:'Клипы · хештеги · тайминг',color:'#a070ff',resp:'Режет 10–30 клипов в день, хештеги и тайминг постинга.',prop:{tag:'P1 · клипы',txt:'Конвейер нарезок из VOD — через Higgsfield Clipper.'}},
 ];
+const IMG_BASE='https://d8j0ntlcm91z4.cloudfront.net/user_38tFo49L6I4vonSX0KGn61l8VIV/';
+const IMG={
+  analytics:'hf_20260628_164058_389f1561-f9b5-479e-99f3-4626831f2cc0.png',
+  smm:'hf_20260628_170146_8ba9301a-0488-4c71-8545-4f7755d72678.png',
+  marketing:'hf_20260628_170150_d16f9d84-aebe-4435-bf29-d5f88bdc6b04.png',
+  media:'hf_20260628_170153_4dac325a-584f-4dae-8541-41d7ec729452.png',
+  stream:'hf_20260628_170157_f51085e3-4ae2-451a-9e57-ffe74cb912f3.png',
+  strategy:'hf_20260628_170211_551e2afa-e1f8-4828-98f8-feb309bd48d0.png',
+  designer:'hf_20260628_170214_9f1700f0-c6bf-4001-bea7-4832bb745131.png',
+  developer:'hf_20260628_170217_3ab0c200-18a4-493f-bc76-64f572a0d64f.png',
+  gambling:'hf_20260628_170220_adff320f-c296-4a97-8139-1d7d5006d5cb.png',
+  clipper:'hf_20260628_170224_f8ed5f8b-8e6b-4444-aa47-14930a6535fc.png'
+};
+TEAM.forEach(t=>t.img=IMG_BASE+(IMG[t.id]||''));
 const FEED = [
   {who:'🎨 Дизайнер',meta:'только что',pr:'p1',txt:'Готова неон-3D шапка и вращающийся баннер в стиле MIDWAM/Dilla. Аватары команды — следующими.'},
   {who:'🧭 Стратег',meta:'12 мин назад',pr:'p0',txt:'РФ соц-покер: игра не на деньги легальна и не подпадает под ст.27 ФЗ «О рекламе».'},
@@ -267,7 +283,7 @@ document.getElementById('mq').innerHTML = (()=>{const items=TEAM.map(t=>`<span>$
 
 const grid=document.getElementById('teamGrid');
 TEAM.forEach(t=>{const el=document.createElement('div');el.className='emp reveal';
-  el.innerHTML=`<div class="top"><div class="av" style="--ac:${t.color};--acGlow:${t.color}66">${t.emoji}</div><div><h3>${t.name}</h3><div class="role">${t.role}</div><div class="stat"><span class="d"></span>онлайн</div></div></div>
+  el.innerHTML=`<div class="top"><div class="av" style="--ac:${t.color};--acGlow:${t.color}66"><img src="${t.img}" alt="${t.name}" loading="lazy" onerror="this.style.display='none';this.parentNode.innerHTML='${t.emoji}'"></div><div><h3>${t.name}</h3><div class="role">${t.role}</div><div class="stat"><span class="d"></span>онлайн</div></div></div>
   <div class="resp">${t.resp}</div><div class="prop"><span class="tag">${t.prop.tag}</span>${t.prop.txt}</div>
   <button class="talk" onclick="openWith('${t.id}')">Написать</button>`;grid.appendChild(el);});
 const feed=document.getElementById('feed');
@@ -284,7 +300,7 @@ try{HISTORY=JSON.parse(localStorage.getItem('pokerok_hist')||'{}')}catch(e){HIST
 function saveHist(){try{localStorage.setItem('pokerok_hist',JSON.stringify(HISTORY))}catch(e){}}
 const agentList=document.getElementById('agentList');
 TEAM.forEach(t=>{const b=document.createElement('button');b.className='agent-btn'+(t.id===current?' on':'');b.id='ab-'+t.id;
-  b.innerHTML=`<span class="ae" style="--ac:${t.color}">${t.emoji}</span><span><b>${t.name}</b><span>${t.role}</span></span>`;
+  b.innerHTML=`<span class="ae" style="--ac:${t.color}"><img src="${t.img}" alt="" loading="lazy" onerror="this.style.display='none';this.parentNode.innerHTML='${t.emoji}'"></span><span><b>${t.name}</b><span>${t.role}</span></span>`;
   b.onclick=()=>selectAgent(t.id);agentList.appendChild(b);});
 const stream=document.getElementById('stream');
 function emp(id){return TEAM.find(t=>t.id===id);}
