@@ -70,10 +70,12 @@ app.post('/api/chat', checkAccess, async (req, res) => {
   const agent = AGENTS[agentId];
   if (!agent) return res.status(400).json({ error: 'Неизвестный сотрудник' });
   if (!message) return res.status(400).json({ error: 'Пустое сообщение' });
+  const mine = store.load().tasks.filter(t => t.assignee === agentId && t.status !== 'done');
+  const taskCtx = mine.length ? ` Твои текущие задачи на доске (помни их, при необходимости выдавай по ним готовый результат): ${mine.map(t => `«${t.title}» (${t.priority}${t.deadline ? ', до ' + t.deadline : ''})`).join('; ')}.` : '';
   const msgs = [];
-  (history || []).slice(-10).forEach(h => msgs.push({ role: h.role, content: h.content }));
+  (history || []).slice(-12).forEach(h => msgs.push({ role: h.role, content: h.content }));
   msgs.push({ role: 'user', content: message });
-  const reply = await callClaude(agent.system, msgs, 600);
+  const reply = await callClaude(agent.system + taskCtx, msgs, 900);
   res.json({ reply, agent: { emoji: agent.emoji, name: agent.name } });
 });
 
@@ -116,8 +118,8 @@ app.post('/api/team-chat', checkAccess, async (req, res) => {
   const message = ((req.body && req.body.message) || '').trim();
   if (!message) return res.status(400).json({ error: 'Пустое сообщение' });
   const sys = AGENTS.assistant.system + ` Сегодня ${new Date().toISOString().slice(0, 10)}. Состав команды (id: имя): ${rosterLine()}.`;
-  const prompt = `Шеф написал в общий чат команды:\n«${message}»\n\nЭто одна или несколько задач, либо вопрос. Сделай так:\n1) Дай короткое ЖИВОЕ обсуждение (2–4 реплики РАЗНЫХ сотрудников: кто берёт задачу и почему, можно лёгкий спор).\n2) В конце верни СТРОГО блок \`\`\`json {"tasks":[{"title":"...","assignee_id":"<id из состава>","priority":"P0|P1|P2","deadline_days":<число>}]}\`\`\`. Если это просто вопрос без задач — "tasks":[] и ответь в обсуждении.`;
-  const text = await callClaude(sys, [{ role: 'user', content: prompt }], 700);
+  const prompt = `Шеф написал в общий чат команды:\n«${message}»\n\nВы — команда ИСПОЛНИТЕЛЕЙ, работаете мгновенно, БЕЗ сроков в днях. Сделай так:\n1) Коротко: кто что берёт.\n2) КАЖДЫЙ, кто взял задачу, ПРЯМО ЗДЕСЬ выдаёт первый ГОТОВЫЙ результат (черновик текста/контент-плана/списка хештегов/идей/кода/промптов — то, что просили), а не обещание и не сроки. Реальный кусок работы, как будто уже сделано.\n3) В конце верни СТРОГО блок \`\`\`json {"tasks":[{"title":"...","assignee_id":"<id из состава>","priority":"P0|P1|P2","deadline_days":<0 если сегодня, 1 если завтра>}]}\`\`\`. Если это просто вопрос без задач — "tasks":[] и ответь по делу.`;
+  const text = await callClaude(sys, [{ role: 'user', content: prompt }], 1100);
   let created = [];
   const m = text.match(/```json\s*([\s\S]*?)```/i) || text.match(/\{[\s\S]*"tasks"[\s\S]*\}/);
   if (m) { try { const obj = JSON.parse(m[1] || m[0]); (obj.tasks || []).forEach(t => { const a = AGENTS[t.assignee_id]; created.push(store.addTask({ title: t.title, assignee: t.assignee_id, assigneeName: a ? a.name : null, assigneeEmoji: a ? a.emoji : '', priority: t.priority || 'P1', deadline: dateIn(t.deadline_days), status: 'progress' })); }); } catch (e) { } }
