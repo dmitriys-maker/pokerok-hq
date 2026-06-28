@@ -16,7 +16,27 @@ function load() {
   if (!cache.tasks) cache.tasks = [];
   if (!cache.feed) cache.feed = [];
   if (!cache.seq) cache.seq = 0;
+  if (!cache.requests) cache.requests = [];
+  if (!cache.reqSeq) cache.reqSeq = 0;
   return cache;
+}
+function createReq(r) {
+  const d = load();
+  d.reqSeq += 1;
+  const req = {
+    id: d.reqSeq, type: r.type || 'design', brief: r.brief || '',
+    logoUrl: r.logoUrl || null, videoUrl: r.videoUrl || null, params: r.params || {},
+    status: 'pending', deliverables: [], note: '', createdAt: Date.now()
+  };
+  d.requests.unshift(req); save(); return req;
+}
+function listReq(type) { const d = load(); return type ? d.requests.filter(r => r.type === type) : d.requests; }
+function fulfillReq(id, deliverables, note, status) {
+  const d = load(); const r = d.requests.find(x => x.id === id);
+  if (!r) return null;
+  if (deliverables) r.deliverables = (r.deliverables || []).concat(deliverables);
+  if (note) r.note = note;
+  r.status = status || 'done'; save(); return r;
 }
 function save() {
   try { fs.writeFileSync(FILE, JSON.stringify(cache)); }
@@ -72,4 +92,4 @@ function summary() {
   };
 }
 
-module.exports = { load, save, addTask, moveTask, deleteTask, addFeed, summary, FILE };
+module.exports = { load, save, addTask, moveTask, deleteTask, addFeed, summary, createReq, listReq, fulfillReq, DIR, FILE };

@@ -14,8 +14,14 @@ const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.ANTHROPIC_API_KEY || '';
 const MODEL = process.env.MODEL || 'claude-haiku-4-5-20251001';
 const ACCESS_PASSWORD = process.env.ACCESS_PASSWORD || '';
+const WORKER_TOKEN = process.env.WORKER_TOKEN || '';
 
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '12mb' }));
+
+// папка загрузок (на постоянном диске, если есть volume)
+const UPLOADS = path.join(store.DIR, 'uploads');
+try { if (!fs.existsSync(UPLOADS)) fs.mkdirSync(UPLOADS, { recursive: true }); } catch (e) {}
+app.use('/uploads', express.static(UPLOADS));
 
 // index.html ищем рядом (плоско) или в public/ (если структура с папкой)
 const INDEX = fs.existsSync(path.join(__dirname, 'index.html'))
@@ -23,9 +29,9 @@ const INDEX = fs.existsSync(path.join(__dirname, 'index.html'))
   : path.join(__dirname, 'public', 'index.html');
 
 function checkAccess(req, res, next) {
-  if (!ACCESS_PASSWORD) return next();
-  const pass = req.headers['x-access-password'] || (req.body && req.body.password);
-  if (pass === ACCESS_PASSWORD) return next();
+  if (!ACCESS_PASSWORD && !WORKER_TOKEN) return next();
+  const pass = req.headers['x-access-password'] || req.headers['x-worker-token'] || (req.body && req.body.password);
+  if (pass === ACCESS_PASSWORD || (WORKER_TOKEN && pass === WORKER_TOKEN)) return next();
   return res.status(401).json({ error: 'Неверный пароль доступа' });
 }
 
@@ -144,6 +150,32 @@ app.get('/api/digest', async (req, res) => {
   const sys = AGENTS.assistant.system + ` Сегодня ${new Date().toISOString().slice(0, 10)}.`;
   const reply = await callClaude(sys, [{ role: 'user', content: `Доска:\n${board}\n\nБрифинг на 4-6 буллетов: что важно сейчас, что горит, что без исполнителя, 1 предложение. Коротко.` }], 400);
   res.json({ reply });
+});
+
+// ===== студии: заявки дизайнеру / нарезчику / разработчику =====
+app.post('/api/req/create', checkAccess, (req, res) => {
+  const b = req.body || {};
+  let logoUrl = null;
+  if (b.logoData && /^data:image\//.test(b.logoData)) {
+    try {
+      const ext = (b.logoData.match(/^data:image\/(\w+)/) || [])[1] || 'png';
+      const data = b.logoData.split(',')[1];
+      const fn = 'logo_' + Date.now() + '.' + ext;
+      fs.writeFileSync(path.join(UPLOADS, fn), Buffer.from(data, 'base64'));
+      logoUrl = '/uploads/' + fn;
+    } catch (e) {}
+  }
+  const r = store.createReq({ type: b.type, brief: b.brief, logoUrl, videoUrl: b.videoUrl, params: b.params });
+  res.json({ request: r });
+});
+app.get('/api/req/list', checkAccess, (req, res) => {
+  res.json({ requests: store.listReq(req.query.type || null) });
+});
+app.post('/api/req/fulfill', checkAccess, (req, res) => {
+  const b = req.body || {};
+  const r = store.fulfillReq(parseInt(b.id), b.deliverables || [], b.note || '', b.status || 'done');
+  if (!r) return res.status(404).json({ error: 'Заявка не найдена' });
+  res.json({ request: r });
 });
 
 app.get('*', (req, res) => res.sendFile(INDEX));

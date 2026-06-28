@@ -169,6 +169,21 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-s
 .tc-inp{display:flex;gap:10px}
 .tc-inp input{flex:1;background:rgba(8,4,15,.6);border:1px solid var(--brd);color:#fff;padding:14px 16px;border-radius:13px;font-family:'Manrope';font-size:15px}
 .tc-inp input:focus{outline:none;border-color:var(--magenta)}
+.lbl{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600}
+.inp{width:100%;background:rgba(8,4,15,.6);border:1px solid var(--brd);color:#fff;padding:12px 14px;border-radius:12px;font-family:'Manrope';font-size:14px;resize:vertical}
+.inp:focus{outline:none;border-color:var(--magenta)}
+select.inp{cursor:pointer}
+.drop{border:2px dashed var(--brd);border-radius:12px;height:88px;display:grid;place-items:center;cursor:pointer;color:var(--muted);font-size:13px;text-align:center;padding:8px}
+.drop:hover{border-color:var(--magenta);color:#fff}
+.reqcard{background:var(--glass);border:1px solid var(--brd);border-radius:14px;padding:16px;margin-bottom:14px;backdrop-filter:blur(12px)}
+.rbrief{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:14px}
+.glogo{width:34px;height:34px;border-radius:8px;object-fit:cover;border:1px solid var(--brd)}
+.rnote{margin-top:8px;font-size:13px;color:#ddd2f2;background:rgba(8,4,15,.4);border-radius:10px;padding:8px 11px}
+.gallery{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.gimg{width:150px;height:150px;object-fit:cover;border-radius:10px;border:1px solid var(--brd);cursor:pointer;transition:.2s}
+.gimg:hover{transform:scale(1.04);border-color:var(--magenta)}
+.gvid{width:200px;border-radius:10px;border:1px solid var(--brd)}
+.gtext{font-size:13px;color:#ddd2f2;background:rgba(8,4,15,.4);border-radius:10px;padding:10px 13px;max-width:100%;white-space:pre-wrap}
 @media(max-width:900px){.charts{grid-template-columns:1fr}.board{grid-template-columns:1fr}}
 @media(max-width:960px){.team{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:1fr}.chat-wrap{grid-template-columns:1fr;height:auto}.chat-side{flex-direction:row;flex-wrap:wrap;height:auto}.chat-main{height:70vh}.nav{display:none}}
 @media(max-width:560px){.team{grid-template-columns:1fr}}
@@ -183,6 +198,9 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-s
     <a id="nav-dashboard" class="on" onclick="go('dashboard')">Штаб</a>
     <a id="nav-teamchat" onclick="go('teamchat')">Общий чат</a>
     <a id="nav-board" onclick="go('board')">Задачи</a>
+    <a id="nav-design" onclick="go('design')">🎨 Дизайн</a>
+    <a id="nav-clip" onclick="go('clip')">🎞 Нарезка</a>
+    <a id="nav-devreq" onclick="go('devreq')">🛠 Заявки</a>
     <a id="nav-assistant" onclick="go('assistant')">Помощник</a>
     <a id="nav-chat" onclick="go('chat')">Сотрудники</a>
   </nav>
@@ -306,6 +324,70 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-s
 </div>
 </main>
 
+<!-- СТУДИЯ ДИЗАЙНЕРА -->
+<main id="view-design" class="view hidden">
+<div class="wrap" style="padding-top:90px">
+  <h2 style="margin:0 0 4px">🎨 Студия дизайнера</h2>
+  <p class="muted" style="margin:0 0 18px">Загрузи лого и опиши, что нужно — дизайнер сгенерит баннер/картинку и положит сюда, в галерею. Без меня-посредника.</p>
+  <div class="panel" style="margin-bottom:18px">
+    <div style="display:flex;gap:14px;flex-wrap:wrap">
+      <div style="flex:1;min-width:260px">
+        <label class="lbl">Бриф (что и как)</label>
+        <textarea id="dBrief" class="inp" rows="3" placeholder="Напр.: баннер для Reels, тёмный неон, лого по центру, текст «WSOP — ставь прогнозы», без карт"></textarea>
+        <label class="lbl" style="margin-top:10px">Формат</label>
+        <select id="dAspect" class="inp"><option value="9:16">9:16 (Reels/Stories)</option><option value="1:1">1:1 (пост)</option><option value="16:9" selected>16:9 (баннер)</option></select>
+      </div>
+      <div style="width:170px">
+        <label class="lbl">Лого / референс</label>
+        <div class="drop" id="dLogoDrop" onclick="document.getElementById('dLogo').click()"><span id="dLogoTxt">＋ загрузить</span></div>
+        <input type="file" id="dLogo" accept="image/*" class="hidden" onchange="readLogo(this)">
+      </div>
+    </div>
+    <button class="btn" style="margin-top:14px" onclick="submitReq('design')">Отправить дизайнеру</button>
+    <span class="muted" id="dMsg" style="margin-left:10px;font-size:13px"></span>
+  </div>
+  <h3 style="margin:0 0 12px">Галерея</h3>
+  <div id="dGallery" class="muted">Загрузка…</div>
+</div>
+</main>
+
+<!-- СТУДИЯ НАРЕЗЧИКА -->
+<main id="view-clip" class="view hidden">
+<div class="wrap" style="padding-top:90px">
+  <h2 style="margin:0 0 4px">🎞 Студия нарезчика</h2>
+  <p class="muted" style="margin:0 0 18px">Дай ссылку на YouTube-видео — нарезчик сделает короткие клипы с субтитрами и положит сюда. (Долгий процесс, до 30+ мин.)</p>
+  <div class="panel" style="margin-bottom:18px">
+    <label class="lbl">Ссылка на видео (YouTube)</label>
+    <input id="cUrl" class="inp" placeholder="https://youtube.com/watch?v=...">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+      <div><label class="lbl">Клипов</label><input id="cNum" class="inp" type="number" value="5" min="1" max="20" style="width:90px"></div>
+      <div><label class="lbl">Формат</label><select id="cAspect" class="inp"><option value="9:16" selected>9:16</option><option value="1:1">1:1</option><option value="16:9">16:9</option></select></div>
+      <div><label class="lbl">Шрифт субтитров</label><select id="cFont" class="inp"><option>Bebas Neue</option><option>Montserrat</option><option>Unbounded</option><option>Inter</option><option>Bangers</option></select></div>
+    </div>
+    <button class="btn" style="margin-top:14px" onclick="submitReq('clip')">Отправить нарезчику</button>
+    <span class="muted" id="cMsg" style="margin-left:10px;font-size:13px"></span>
+  </div>
+  <h3 style="margin:0 0 12px">Галерея клипов</h3>
+  <div id="cGallery" class="muted">Загрузка…</div>
+</div>
+</main>
+
+<!-- ЗАЯВКИ РАЗРАБОТЧИКУ -->
+<main id="view-devreq" class="view hidden">
+<div class="wrap" style="padding-top:90px;max-width:860px">
+  <h2 style="margin:0 0 4px">🛠 Заявки разработчику</h2>
+  <p class="muted" style="margin:0 0 18px">Опиши, что поменять на сайте — разработчик внесёт правку и передеплоит. Статус и комментарий появятся ниже.</p>
+  <div class="panel" style="margin-bottom:18px">
+    <label class="lbl">Что поменять</label>
+    <textarea id="rText" class="inp" rows="3" placeholder="Напр.: смени заголовок на главной, добавь кнопку «Связаться», поменяй цвет акцента на золотой"></textarea>
+    <button class="btn" style="margin-top:14px" onclick="submitReq('dev')">Отправить разработчику</button>
+    <span class="muted" id="rMsg" style="margin-left:10px;font-size:13px"></span>
+  </div>
+  <h3 style="margin:0 0 12px">Заявки</h3>
+  <div id="rList" class="muted">Загрузка…</div>
+</div>
+</main>
+
 <script>
 const TEAM = [
   {id:'analytics',emoji:'📊',name:'Аналитик',role:'Данные · охваты · ER',color:'#36d6ff',resp:'Считает цифры, режет идеи без доказательств.',prop:{tag:'P0 · аналитика',txt:'Охваты Миши просели с 7.5K до 4K — нужен новый нарратив.'}},
@@ -391,8 +473,40 @@ async function runRoundtable(){const inp=document.getElementById('rtInput');cons
     if(d.error){addBub('⚠️ '+d.error,'them','🧠');return;}d.turns.forEach(tr=>addBub(tr.text,tr.isLead?'me':'them',tr.emoji+' '+tr.name+(tr.isLead?' · ИТОГ':'')));
   }catch(err){t.remove();addBub('⚠️ Сеть недоступна.','them','🧠');}}
 
-const VIEWS=['dashboard','teamchat','board','assistant','chat'];
-function go(v){VIEWS.forEach(x=>{const el=document.getElementById('view-'+x);if(el)el.classList.toggle('hidden',x!==v);const n=document.getElementById('nav-'+x);if(n)n.classList.toggle('on',x===v);});window.scrollTo(0,0);if(v==='board')loadBoard();if(v==='teamchat')loadTeamFeed();if(v==='assistant')loadDigest();}
+const VIEWS=['dashboard','teamchat','board','design','clip','devreq','assistant','chat'];
+function go(v){VIEWS.forEach(x=>{const el=document.getElementById('view-'+x);if(el)el.classList.toggle('hidden',x!==v);const n=document.getElementById('nav-'+x);if(n)n.classList.toggle('on',x===v);});window.scrollTo(0,0);if(v==='board')loadBoard();if(v==='teamchat')loadTeamFeed();if(v==='assistant')loadDigest();if(v==='design')loadStudio('design');if(v==='clip')loadStudio('clip');if(v==='devreq')loadStudio('dev');}
+
+/* ===== студии (дизайн / нарезка / разработчик) ===== */
+let LOGO_DATA=null;
+function readLogo(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{LOGO_DATA=e.target.result;document.getElementById('dLogoTxt').textContent='✓ '+f.name.slice(0,14);};r.readAsDataURL(f);}
+async function submitReq(type){if(!(await ensureAccess()))return;
+  let body={type};let msgEl;
+  if(type==='design'){body.brief=document.getElementById('dBrief').value.trim();body.params={aspect:document.getElementById('dAspect').value};body.logoData=LOGO_DATA;msgEl=document.getElementById('dMsg');if(!body.brief){msgEl.textContent='Опиши, что нужно';return;}}
+  if(type==='clip'){body.videoUrl=document.getElementById('cUrl').value.trim();body.params={num:+document.getElementById('cNum').value,aspect:document.getElementById('cAspect').value,font:document.getElementById('cFont').value};msgEl=document.getElementById('cMsg');if(!body.videoUrl){msgEl.textContent='Вставь ссылку на видео';return;}}
+  if(type==='dev'){body.brief=document.getElementById('rText').value.trim();msgEl=document.getElementById('rMsg');if(!body.brief){msgEl.textContent='Опиши правку';return;}}
+  msgEl.textContent='Отправляю…';
+  try{const r=await fetch('/api/req/create',{method:'POST',headers:{'Content-Type':'application/json','x-access-password':ACCESS},body:JSON.stringify(body)});const d=await r.json();
+    if(d.error){msgEl.textContent='⚠️ '+d.error;return;}
+    msgEl.textContent='✅ Заявка отправлена! Сотрудник возьмёт её в работу.';LOGO_DATA=null;
+    if(type==='design'){document.getElementById('dBrief').value='';document.getElementById('dLogoTxt').textContent='＋ загрузить';}
+    if(type==='clip')document.getElementById('cUrl').value='';
+    if(type==='dev')document.getElementById('rText').value='';
+    loadStudio(type);
+  }catch(e){msgEl.textContent='⚠️ Сеть недоступна.';}}
+async function loadStudio(type){
+  const map={design:'dGallery',clip:'cGallery',dev:'rList'};const el=document.getElementById(map[type]);if(!el)return;
+  if(!ACCESS){el.innerHTML='<span class="muted">Введи пароль доступа, чтобы увидеть заявки.</span>';try{await ensureAccess();}catch(e){}}
+  try{const r=await fetch('/api/req/list?type='+type,{headers:{'x-access-password':ACCESS}});const d=await r.json();const list=d.requests||[];
+    if(!list.length){el.innerHTML='<span class="muted">Заявок пока нет.</span>';return;}
+    el.innerHTML=list.map(q=>{
+      const st=q.status==='done'?'<span class="badge won">готово</span>':q.status==='in_progress'?'<span class="badge pending">в работе</span>':'<span class="badge pending">в очереди</span>';
+      let media='';
+      (q.deliverables||[]).forEach(dv=>{if(dv.kind==='image'&&dv.url)media+=`<a href="${dv.url}" target="_blank"><img class="gimg" src="${dv.url}"></a>`;else if(dv.kind==='video'&&dv.url)media+=`<video class="gvid" src="${dv.url}" controls></video>`;else if(dv.text)media+=`<div class="gtext">${dv.text}</div>`;});
+      const logo=q.logoUrl?`<img class="glogo" src="${q.logoUrl}">`:'';
+      const sub=q.brief||q.videoUrl||'';
+      return `<div class="reqcard">${st}<div class="rbrief">${logo}<span>${sub}</span></div>${q.note?`<div class="rnote">💬 ${q.note}</div>`:''}${media?`<div class="gallery">${media}</div>`:'<div class="muted" style="font-size:12px;margin-top:6px">ждёт исполнителя…</div>'}</div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<span class="muted">Не удалось загрузить.</span>';}}
 function openWith(id){selectAgent(id);go('chat');setTimeout(()=>document.getElementById('chatInput').focus(),50);}
 renderConv();
 
