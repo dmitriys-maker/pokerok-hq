@@ -144,6 +144,32 @@ box-shadow:inset 0 -8px 16px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.35),0 0 22px 
 .howto b{color:#fff}
 footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-size:13px;text-align:center;margin-top:20px}
 
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px}
+.chartcard{background:var(--glass);border:1px solid var(--brd);border-radius:16px;padding:18px;backdrop-filter:blur(12px)}
+.chartcard h4{margin:0 0 14px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:12.5px}
+.bar .lbl{width:150px;flex-shrink:0;color:#ddd2f2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .track{flex:1;height:12px;background:rgba(255,255,255,.06);border-radius:6px;overflow:hidden}
+.bar .fill{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#ff3dcb,#7c3aed);transition:width .5s}
+.bar .val{width:24px;text-align:right;color:var(--muted)}
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding-bottom:40px}
+.col{background:var(--glass);border:1px solid var(--brd);border-radius:16px;padding:14px;backdrop-filter:blur(12px);min-height:160px}
+.col h3{margin:0 0 12px;font-size:14px;display:flex;align-items:center;gap:8px}
+.col .cnt{font-size:11px;color:var(--muted);background:rgba(255,255,255,.07);padding:1px 8px;border-radius:999px}
+.tcard{background:rgba(8,4,15,.5);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.tcard .ttl{font-weight:700;font-size:13.5px;margin:6px 0 8px}
+.tcard .meta{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted);flex-wrap:wrap}
+.tcard .who{display:flex;align-items:center;gap:5px}
+.tcard .who img{width:18px;height:18px;border-radius:5px;object-fit:cover}
+.tcard .dl{color:#ffb6ec}
+.tcard .acts{display:flex;gap:6px;margin-top:9px}
+.tcard .acts button{flex:1;font-size:12px;padding:5px;border-radius:8px;border:1px solid var(--brd);background:transparent;color:var(--muted);cursor:pointer}
+.tcard .acts button:hover{color:#fff;border-color:var(--magenta)}
+.tc-stream{min-height:300px;max-height:56vh;overflow-y:auto;background:var(--glass);border:1px solid var(--brd);border-radius:16px;padding:18px;backdrop-filter:blur(12px);display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+.tc-inp{display:flex;gap:10px}
+.tc-inp input{flex:1;background:rgba(8,4,15,.6);border:1px solid var(--brd);color:#fff;padding:14px 16px;border-radius:13px;font-family:'Manrope';font-size:15px}
+.tc-inp input:focus{outline:none;border-color:var(--magenta)}
+@media(max-width:900px){.charts{grid-template-columns:1fr}.board{grid-template-columns:1fr}}
 @media(max-width:960px){.team{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:1fr}.chat-wrap{grid-template-columns:1fr;height:auto}.chat-side{flex-direction:row;flex-wrap:wrap;height:auto}.chat-main{height:70vh}.nav{display:none}}
 @media(max-width:560px){.team{grid-template-columns:1fr}}
 </style>
@@ -155,7 +181,10 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-s
   <div class="brand" onclick="go('dashboard')">ПОКЕРОК<small>HQ</small></div>
   <nav class="nav">
     <a id="nav-dashboard" class="on" onclick="go('dashboard')">Штаб</a>
-    <a id="nav-chat" onclick="go('chat')">Чат с командой</a>
+    <a id="nav-teamchat" onclick="go('teamchat')">Общий чат</a>
+    <a id="nav-board" onclick="go('board')">Задачи</a>
+    <a id="nav-assistant" onclick="go('assistant')">Помощник</a>
+    <a id="nav-chat" onclick="go('chat')">Сотрудники</a>
   </nav>
   <div class="live"><span class="dot"></span> Команда онлайн 24/7</div>
 </div></header>
@@ -232,6 +261,48 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-s
       </div>
     </div>
   </div>
+</div>
+</main>
+
+<!-- ОБЩИЙ ЧАТ -->
+<main id="view-teamchat" class="view hidden">
+<div class="wrap" style="padding-top:90px">
+  <h2 style="margin:0 0 4px">💬 Общий чат команды</h2>
+  <p class="muted" style="margin:0 0 16px">Напиши задачу одним сообщением — команда сама обсудит и распределит, кто берёт. Не нужно писать каждому. Готовые задачи появятся во вкладке «Задачи».</p>
+  <div class="tc-stream" id="tcStream"></div>
+  <div class="tc-inp">
+    <input id="tcInput" placeholder="Например: нужно 5 шортсов про WSOP к пятнице + разбор бонусов конкурентов" onkeydown="if(event.key==='Enter')teamSend()">
+    <button class="btn" onclick="teamSend()">Отправить команде</button>
+  </div>
+  <div style="height:40px"></div>
+</div>
+</main>
+
+<!-- ДОСКА ЗАДАЧ -->
+<main id="view-board" class="view hidden">
+<div class="wrap" style="padding-top:90px">
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px">
+    <h2 style="margin:0">📋 Доска задач</h2>
+    <button class="btn ghost sm" onclick="loadBoard()">⟳ Обновить</button>
+    <span class="muted" id="boardEmpty" style="font-size:13px"></span>
+  </div>
+  <p class="muted" style="margin:0 0 18px">Задачи ставятся в «Общем чате» — команда сама их разбирает, и они падают сюда с дедлайнами.</p>
+  <div class="charts" id="charts"></div>
+  <div class="board" id="board"></div>
+</div>
+</main>
+
+<!-- ПОМОЩНИК -->
+<main id="view-assistant" class="view hidden">
+<div class="wrap" style="padding-top:90px;max-width:840px">
+  <h2 style="margin:0 0 4px">🤖 Помощник</h2>
+  <p class="muted" style="margin:0 0 18px">Твой chief of staff: короткая выжимка — что горит, что без исполнителя, что сделать первым.</p>
+  <div class="panel" style="margin-bottom:16px"><h3 style="margin:0 0 10px">📌 Брифинг по доске</h3><div id="digest" class="muted">Загрузка…</div><button class="btn ghost sm" style="margin-top:14px" onclick="loadDigest()">⟳ Обновить брифинг</button></div>
+  <div class="panel"><h3 style="margin:0 0 12px">Спросить помощника</h3>
+    <div class="tc-inp"><input id="askInput" placeholder="Что мне сделать в первую очередь?" onkeydown="if(event.key==='Enter')askAssistant()"><button class="btn" onclick="askAssistant()">Спросить</button></div>
+    <div id="askReply" style="margin-top:14px"></div>
+  </div>
+  <div style="height:40px"></div>
 </div>
 </main>
 
@@ -320,9 +391,33 @@ async function runRoundtable(){const inp=document.getElementById('rtInput');cons
     if(d.error){addBub('⚠️ '+d.error,'them','🧠');return;}d.turns.forEach(tr=>addBub(tr.text,tr.isLead?'me':'them',tr.emoji+' '+tr.name+(tr.isLead?' · ИТОГ':'')));
   }catch(err){t.remove();addBub('⚠️ Сеть недоступна.','them','🧠');}}
 
-function go(v){document.getElementById('view-dashboard').classList.toggle('hidden',v!=='dashboard');document.getElementById('view-chat').classList.toggle('hidden',v!=='chat');document.getElementById('nav-dashboard').classList.toggle('on',v==='dashboard');document.getElementById('nav-chat').classList.toggle('on',v==='chat');window.scrollTo(0,0);}
+const VIEWS=['dashboard','teamchat','board','assistant','chat'];
+function go(v){VIEWS.forEach(x=>{const el=document.getElementById('view-'+x);if(el)el.classList.toggle('hidden',x!==v);const n=document.getElementById('nav-'+x);if(n)n.classList.toggle('on',x===v);});window.scrollTo(0,0);if(v==='board')loadBoard();if(v==='teamchat')loadTeamFeed();if(v==='assistant')loadDigest();}
 function openWith(id){selectAgent(id);go('chat');setTimeout(()=>document.getElementById('chatInput').focus(),50);}
 renderConv();
+
+/* ===== доска задач / общий чат / помощник ===== */
+const EMOJI_OF={}; TEAM.forEach(t=>EMOJI_OF[t.id]={emoji:t.emoji,img:t.img,name:t.name});
+const COLS=[['backlog','🗂 Бэклог'],['progress','⚙️ В работе'],['done','✅ Готово']];
+function priBadge(p){const c=p==='P0'?'p0':p==='P2'?'p2':'p1';return `<span class="pr ${c}">${p}</span>`;}
+async function loadBoard(){try{const r=await fetch('/api/tasks');const d=await r.json();renderCharts(d.tasks);renderBoard(d.tasks);document.getElementById('boardEmpty').textContent=d.tasks.length?(d.tasks.length+' задач'):'Пока пусто — поставь первую в Общем чате';}catch(e){}}
+function renderBoard(tasks){const board=document.getElementById('board');board.innerHTML='';COLS.forEach(([st,name])=>{const list=tasks.filter(t=>t.status===st);const col=document.createElement('div');col.className='col';
+  col.innerHTML=`<h3>${name} <span class="cnt">${list.length}</span></h3>`+(list.map(t=>{const a=EMOJI_OF[t.assignee]||{};const who=t.assigneeName?`<span class="who">${a.img?`<img src="${a.img}">`:(a.emoji||'')} ${t.assigneeName}</span>`:'<span class="muted">без исполнителя</span>';const dl=t.deadline?`<span class="dl">⏱ ${t.deadline}</span>`:'';const left=st!=='backlog'?`<button onclick="moveTask(${t.id},'${st==='done'?'progress':'backlog'}')">←</button>`:'';const right=st!=='done'?`<button onclick="moveTask(${t.id},'${st==='backlog'?'progress':'done'}')">→</button>`:'';return `<div class="tcard">${priBadge(t.priority)}<div class="ttl">${t.title}</div><div class="meta">${who} ${dl}</div><div class="acts">${left}${right}<button onclick="delTask(${t.id})">✕</button></div></div>`;}).join('')||'<div class="muted" style="font-size:12px;padding:6px">пусто</div>');board.appendChild(col);});}
+function renderCharts(tasks){const byStatus=[['backlog','Бэклог'],['progress','В работе'],['done','Готово']].map(([s,n])=>[n,tasks.filter(t=>t.status===s).length]);const byA={};tasks.forEach(t=>{if(t.status!=='done'){const k=t.assigneeName||'без исполнителя';byA[k]=(byA[k]||0)+1;}});const aArr=Object.entries(byA).sort((a,b)=>b[1]-a[1]).slice(0,8);const max1=Math.max(1,...byStatus.map(x=>x[1])),max2=Math.max(1,...aArr.map(x=>x[1]));const bars=(arr,mx)=>arr.map(([n,v])=>`<div class="bar"><span class="lbl">${n}</span><span class="track"><span class="fill" style="width:${v/mx*100}%"></span></span><span class="val">${v}</span></div>`).join('')||'<span class="muted" style="font-size:12px">нет данных</span>';document.getElementById('charts').innerHTML=`<div class="chartcard"><h4>По статусам</h4>${bars(byStatus,max1)}</div><div class="chartcard"><h4>Загрузка по сотрудникам (в работе)</h4>${bars(aArr,max2)}</div>`;}
+async function moveTask(id,status){if(!(await ensureAccess()))return;await fetch('/api/tasks/move',{method:'POST',headers:{'Content-Type':'application/json','x-access-password':ACCESS},body:JSON.stringify({id,status})});loadBoard();}
+async function delTask(id){if(!(await ensureAccess()))return;await fetch('/api/tasks/delete',{method:'POST',headers:{'Content-Type':'application/json','x-access-password':ACCESS},body:JSON.stringify({id})});loadBoard();}
+
+const tcStream=document.getElementById('tcStream');
+function tcBub(txt,cls,nm){const b=document.createElement('div');b.className='bub '+cls;b.innerHTML=(nm?`<div class="nm">${nm}</div>`:'')+String(txt).replace(/\n/g,'<br>');tcStream.appendChild(b);tcStream.scrollTop=tcStream.scrollHeight;return b;}
+function loadTeamFeed(){if(tcStream.dataset.init)return;tcStream.dataset.init='1';tcBub('Пиши сюда любую задачу — я (Помощник) и команда разберём, кто берёт, поставим приоритет и дедлайн. Задачи появятся во вкладке «Задачи».','them','🤖 Помощник');}
+async function teamSend(){const i=document.getElementById('tcInput');const v=i.value.trim();if(!v)return;if(!(await ensureAccess()))return;tcBub(v,'me');i.value='';const t=tcBub('<span class="typing">команда разбирает…</span>','them','🤖 Команда');
+  try{const r=await fetch('/api/team-chat',{method:'POST',headers:{'Content-Type':'application/json','x-access-password':ACCESS},body:JSON.stringify({message:v})});const d=await r.json();t.remove();
+    if(d.error){tcBub('⚠️ '+d.error,'them','🤖');return;}tcBub(d.reply,'them','🤖 Команда');if(d.tasks&&d.tasks.length)tcBub('✅ Создано задач: '+d.tasks.length+' — открой вкладку «Задачи».','me');
+  }catch(e){t.remove();tcBub('⚠️ Сеть недоступна.','them','🤖');}}
+
+async function loadDigest(){const el=document.getElementById('digest');el.textContent='Загрузка…';try{const r=await fetch('/api/digest');const d=await r.json();el.innerHTML=String(d.reply).replace(/\n/g,'<br>');}catch(e){el.textContent='Не удалось загрузить.';}}
+async function askAssistant(){const i=document.getElementById('askInput');const v=i.value.trim();if(!v)return;if(!(await ensureAccess()))return;const out=document.getElementById('askReply');out.innerHTML='<span class="muted">Помощник думает…</span>';i.value='';
+  try{const r=await fetch('/api/assistant',{method:'POST',headers:{'Content-Type':'application/json','x-access-password':ACCESS},body:JSON.stringify({question:v})});const d=await r.json();out.innerHTML='<div class="bub them" style="max-width:100%"><div class="nm">🤖 Помощник</div>'+String(d.reply).replace(/\n/g,'<br>')+'</div>';}catch(e){out.textContent='Сеть недоступна.';}}
 
 /* reveal on scroll */
 const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target);}}),{threshold:.1});

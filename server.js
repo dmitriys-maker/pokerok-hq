@@ -7,6 +7,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const { AGENTS } = require('./agents');
+const store = require('./tasks');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -100,6 +101,47 @@ app.post('/api/roundtable', checkAccess, async (req, res) => {
   );
   turns.push({ id: 'lead', emoji: lead.emoji, name: lead.name, text: synthesis, isLead: true });
   res.json({ turns });
+});
+
+// ===== задачи, общий чат, помощник =====
+const WORKERS = ['analytics', 'smm', 'marketing', 'media', 'stream', 'strategy', 'designer', 'developer', 'gambling', 'clipper'];
+function rosterLine() { return WORKERS.map(id => `${id}: ${AGENTS[id].name}`).join(' | '); }
+function dateIn(days) { const d = new Date(); d.setDate(d.getDate() + (parseInt(days) || 3)); return d.toISOString().slice(0, 10); }
+
+app.get('/api/tasks', (req, res) => { const d = store.load(); res.json({ tasks: d.tasks, feed: d.feed.slice(0, 30), summary: store.summary() }); });
+app.post('/api/tasks/move', checkAccess, (req, res) => { const t = store.moveTask(parseInt(req.body.id), req.body.status); res.json({ ok: !!t, task: t }); });
+app.post('/api/tasks/delete', checkAccess, (req, res) => { store.deleteTask(parseInt(req.body.id)); res.json({ ok: true }); });
+
+app.post('/api/team-chat', checkAccess, async (req, res) => {
+  const message = ((req.body && req.body.message) || '').trim();
+  if (!message) return res.status(400).json({ error: 'Пустое сообщение' });
+  const sys = AGENTS.assistant.system + ` Сегодня ${new Date().toISOString().slice(0, 10)}. Состав команды (id: имя): ${rosterLine()}.`;
+  const prompt = `Шеф написал в общий чат команды:\n«${message}»\n\nЭто одна или несколько задач, либо вопрос. Сделай так:\n1) Дай короткое ЖИВОЕ обсуждение (2–4 реплики РАЗНЫХ сотрудников: кто берёт задачу и почему, можно лёгкий спор).\n2) В конце верни СТРОГО блок \`\`\`json {"tasks":[{"title":"...","assignee_id":"<id из состава>","priority":"P0|P1|P2","deadline_days":<число>}]}\`\`\`. Если это просто вопрос без задач — "tasks":[] и ответь в обсуждении.`;
+  const text = await callClaude(sys, [{ role: 'user', content: prompt }], 700);
+  let created = [];
+  const m = text.match(/```json\s*([\s\S]*?)```/i) || text.match(/\{[\s\S]*"tasks"[\s\S]*\}/);
+  if (m) { try { const obj = JSON.parse(m[1] || m[0]); (obj.tasks || []).forEach(t => { const a = AGENTS[t.assignee_id]; created.push(store.addTask({ title: t.title, assignee: t.assignee_id, assigneeName: a ? a.name : null, assigneeEmoji: a ? a.emoji : '', priority: t.priority || 'P1', deadline: dateIn(t.deadline_days), status: 'progress' })); }); } catch (e) { } }
+  const discussion = text.replace(/```json[\s\S]*?```/i, '').trim();
+  store.addFeed({ kind: 'task', who: '🤖 Помощник', txt: created.length ? `Разобрали: «${message}» → ${created.length} задач(и).` : `Обсудили: «${message}»` });
+  res.json({ reply: discussion, tasks: created, summary: store.summary() });
+});
+
+app.post('/api/assistant', checkAccess, async (req, res) => {
+  const q = ((req.body && req.body.question) || '').trim();
+  const d = store.load();
+  const board = d.tasks.map(t => `#${t.id} [${t.status}] ${t.priority} "${t.title}" — ${t.assigneeName || 'без исполнителя'}${t.deadline ? (' до ' + t.deadline) : ''}`).join('\n') || '(задач нет)';
+  const sys = AGENTS.assistant.system + ` Сегодня ${new Date().toISOString().slice(0, 10)}.`;
+  const prompt = (q ? `Вопрос шефа: «${q}».\n\n` : 'Дай шефу короткий брифинг по доске.\n\n') + `Доска задач:\n${board}\n\nОтветь сжато (буллеты): что горит (P0/дедлайны), что без исполнителя, 1–2 предложения.`;
+  const reply = await callClaude(sys, [{ role: 'user', content: prompt }], 450);
+  res.json({ reply });
+});
+app.get('/api/digest', async (req, res) => {
+  const d = store.load();
+  if (!API_KEY) return res.json({ reply: 'Добавь ANTHROPIC_API_KEY — и я начну давать брифинги. Сейчас на доске: ' + store.summary().total + ' задач.' });
+  const board = d.tasks.slice(0, 20).map(t => `[${t.status}] ${t.priority} "${t.title}" — ${t.assigneeName || 'без исполнителя'}${t.deadline ? (' до ' + t.deadline) : ''}`).join('\n') || '(задач пока нет)';
+  const sys = AGENTS.assistant.system + ` Сегодня ${new Date().toISOString().slice(0, 10)}.`;
+  const reply = await callClaude(sys, [{ role: 'user', content: `Доска:\n${board}\n\nБрифинг на 4-6 буллетов: что важно сейчас, что горит, что без исполнителя, 1 предложение. Коротко.` }], 400);
+  res.json({ reply });
 });
 
 app.get('*', (req, res) => res.sendFile(INDEX));
