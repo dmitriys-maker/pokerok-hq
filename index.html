@@ -161,7 +161,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-s
     <h2>🪑 За столом команды</h2>
     <p class="sub">Вся команда в сборе. Нажми на человечка — откроется чат с ним.</p>
     <div class="table-card">
-      <svg viewBox="0 0 900 470" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 900 510" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <radialGradient id="felt" cx="50%" cy="45%" r="60%">
             <stop offset="0%" stop-color="#3a1f6e"/><stop offset="70%" stop-color="#241247"/><stop offset="100%" stop-color="#1a0d33"/>
@@ -254,10 +254,11 @@ const MESSAGES = [
   {emoji:'🎯',nm:'Маркетолог',txt:'Предлагаю на летучке зафиксировать правило 80/20 контент/оффер. Нужен твой голос.'},
 ];
 
-const SEATS = [[180,110],[450,80],[720,110],[720,390],[450,420],[180,390]];
+const SEATS = [[160,90],[450,72],[740,90],[740,415],[450,420],[160,415]];
 function makeChar(c, x, y, i){
   const flip = y > 250;
-  return `<g class="char float" style="animation-delay:${i*0.4}s" onclick="openWith('${c.id}')" transform="translate(${x},${y})">
+  return `<g onclick="openWith('${c.id}')" transform="translate(${x},${y})">
+   <g class="char float" style="animation-delay:${i*0.4}s">
     <ellipse cx="0" cy="46" rx="30" ry="9" fill="rgba(0,0,0,.35)"/>
     <path d="M-26 44 Q-28 6 0 4 Q28 6 26 44 Z" fill="${c.color}" opacity=".92"/>
     <path d="M-26 44 Q-28 6 0 4 Q28 6 26 44 Z" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/>
@@ -266,9 +267,10 @@ function makeChar(c, x, y, i){
     <circle cx="-6" cy="-18" r="2.4" fill="#241247"/><circle cx="6" cy="-18" r="2.4" fill="#241247"/>
     <path d="M-6 -9 Q0 -5 6 -9" stroke="#241247" stroke-width="2" fill="none" stroke-linecap="round"/>
     <g transform="translate(0,${flip? 70 : -46})">
-      <rect x="-60" y="-15" width="120" height="26" rx="13" fill="rgba(10,5,24,.7)" stroke="${c.color}" stroke-width="1.5"/>
+      <rect x="-62" y="-15" width="124" height="26" rx="13" fill="rgba(10,5,24,.82)" stroke="${c.color}" stroke-width="1.5"/>
       <text x="0" y="3" text-anchor="middle" class="nm" font-size="13">${c.emoji} ${c.name}</text>
     </g>
+   </g>
   </g>`;
 }
 document.getElementById('charLayer').innerHTML = TEAM.map((c,i)=>makeChar(c, SEATS[i][0], SEATS[i][1], i)).join('');
