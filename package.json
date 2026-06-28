@@ -1,0 +1,15 @@
+{
+  "name": "pokerok-hq-ai",
+  "version": "1.0.0",
+  "description": "ПОКЕРОК HQ — штаб команды с живым ИИ-чатом",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

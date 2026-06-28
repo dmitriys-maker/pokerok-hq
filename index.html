@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ПОКЕРОК HQ — штаб команды</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0518;--ink:#f3eefc;--muted:#a99cc9;--violet:#8b5cf6;--magenta:#ff3dcb;--cyan:#36d6ff;--green:#36e8a0;
+  --glass:rgba(40,24,72,.45);--brd:rgba(168,140,255,.18);--line:rgba(168,140,255,.14);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Manrope',system-ui,sans-serif;line-height:1.55;overflow-x:hidden}
+.bg{position:fixed;inset:0;z-index:-2;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;mix-blend-mode:screen}
+.b1{width:520px;height:520px;background:radial-gradient(circle,#ff3dcb,transparent 65%);top:-160px;left:-120px;animation:d1 22s ease-in-out infinite}
+.b2{width:600px;height:600px;background:radial-gradient(circle,#7c3aed,transparent 65%);bottom:-220px;right:-160px;animation:d2 26s ease-in-out infinite}
+.b3{width:420px;height:420px;background:radial-gradient(circle,#36d6ff,transparent 65%);top:42%;left:54%;opacity:.32;animation:d3 30s ease-in-out infinite}
+@keyframes d1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(120px,90px) scale(1.15)}}
+@keyframes d2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-130px,-80px) scale(1.1)}}
+@keyframes d3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-90px,60px) scale(1.2)}}
+h1,h2,h3,.dsp{font-family:'Unbounded',sans-serif;letter-spacing:-.01em}
+.wrap{max-width:1240px;margin:0 auto;padding:0 22px}
+header{position:sticky;top:0;z-index:30;backdrop-filter:blur(16px);background:rgba(10,5,24,.6);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:16px;height:72px}
+.orb{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff8fe6,#ff3dcb 40%,#7c3aed 90%);box-shadow:0 0 22px rgba(255,61,203,.7);animation:pulse 4s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 22px rgba(255,61,203,.6)}50%{box-shadow:0 0 34px rgba(124,58,237,.8)}}
+.brand{font-family:'Unbounded';font-weight:800;font-size:20px}
+.brand small{font-weight:400;font-size:11px;color:var(--muted);letter-spacing:3px;margin-left:6px}
+.live{margin-left:auto;display:flex;align-items:center;gap:9px;font-weight:700;font-size:13px;color:#84f3c4;background:rgba(54,232,160,.1);border:1px solid rgba(54,232,160,.35);padding:8px 15px;border-radius:999px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:bk 1.6s infinite}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.35}}
+.hero{padding:46px 0 14px}
+.hero h1{font-size:clamp(34px,6vw,62px);font-weight:900;margin:0;line-height:1;background:linear-gradient(180deg,#fff 30%,#e9c6ff 80%,#ff8fe6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);font-size:18px;max-width:680px;margin:14px 0 0}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:28px 0 8px}
+.kpi{background:var(--glass);border:1px solid var(--brd);border-radius:16px;padding:18px;backdrop-filter:blur(14px)}
+.kpi .n{font-family:'Unbounded';font-size:24px;font-weight:800;background:linear-gradient(120deg,#fff,#ff8fe6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kpi .l{color:var(--muted);font-size:12.5px;margin-top:4px}
+.sec{padding:34px 0}
+.sec h2{font-size:26px;margin:0 0 6px}
+.sec .sub{color:var(--muted);margin:0 0 22px}
+.grid{display:grid;gap:16px}
+.team{grid-template-columns:repeat(3,1fr)}
+.emp{background:var(--glass);border:1px solid var(--brd);border-radius:18px;padding:20px;backdrop-filter:blur(14px);transition:.25s;cursor:pointer;position:relative}
+.emp:hover{transform:translateY(-5px);border-color:var(--magenta);box-shadow:0 18px 50px rgba(0,0,0,.4),0 0 36px rgba(255,61,203,.18)}
+.emp .top{display:flex;align-items:center;gap:13px;margin-bottom:12px}
+.av{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;font-size:26px;flex-shrink:0;background:linear-gradient(135deg,rgba(255,61,203,.25),rgba(124,58,237,.25));border:1px solid var(--brd)}
+.emp h3{margin:0;font-size:16px}
+.emp .role{color:var(--muted);font-size:12.5px}
+.stat{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#84f3c4;font-weight:700;margin-top:3px}
+.stat .d{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.emp .resp{font-size:13px;color:var(--muted);margin:4px 0 12px}
+.prop{background:rgba(10,5,24,.5);border:1px solid var(--line);border-radius:12px;padding:11px 13px;font-size:13px}
+.prop .tag{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#ff8fe6;display:block;margin-bottom:3px}
+.talk{margin-top:12px;width:100%;border:1px solid var(--brd);background:transparent;color:var(--ink);padding:9px;border-radius:11px;cursor:pointer;font-weight:700;font-family:'Manrope';transition:.18s}
+.talk:hover{background:linear-gradient(120deg,#ff3dcb,#7c3aed);border-color:transparent}
+/* feed + messages */
+.cols{display:grid;grid-template-columns:1.3fr 1fr;gap:20px}
+.panel{background:var(--glass);border:1px solid var(--brd);border-radius:18px;padding:22px;backdrop-filter:blur(14px)}
+.panel h3{margin:0 0 16px;font-size:17px}
+.feed-item{border-left:2px solid var(--magenta);padding:4px 0 16px 16px;position:relative;margin-bottom:4px}
+.feed-item::before{content:'';position:absolute;left:-5px;top:6px;width:8px;height:8px;border-radius:50%;background:var(--magenta);box-shadow:0 0 8px var(--magenta)}
+.feed-item .who{font-weight:800;font-size:13px}
+.feed-item .meta{font-size:11px;color:var(--muted);margin:2px 0 6px}
+.feed-item .txt{font-size:13.5px;color:#ddd2f2}
+.pr{display:inline-block;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;margin-left:6px}
+.p0{background:rgba(255,61,203,.18);color:#ff8fe6}.p1{background:rgba(54,214,255,.15);color:#9fe6ff}.p2{background:rgba(168,140,255,.15);color:#c9a8ff}
+.msg{display:flex;gap:11px;margin-bottom:14px}
+.msg .mav{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:18px;flex-shrink:0;background:linear-gradient(135deg,rgba(255,61,203,.22),rgba(124,58,237,.22));border:1px solid var(--brd)}
+.msg .mb{background:rgba(10,5,24,.5);border:1px solid var(--line);border-radius:13px;border-top-left-radius:3px;padding:10px 13px;font-size:13.5px}
+.msg .mb .nm{font-weight:800;font-size:12px;color:#ff8fe6;margin-bottom:3px}
+/* chat */
+.chat{position:fixed;bottom:0;right:0;width:min(420px,94vw);z-index:40;transform:translateY(calc(100% - 56px));transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.chat.open{transform:translateY(0)}
+.chat-head{height:56px;display:flex;align-items:center;gap:11px;padding:0 18px;cursor:pointer;background:linear-gradient(120deg,#ff3dcb,#7c3aed);border-radius:18px 18px 0 0;font-weight:800}
+.chat-head .arr{margin-left:auto;transition:.3s}
+.chat.open .chat-head .arr{transform:rotate(180deg)}
+.chat-body{height:60vh;background:linear-gradient(180deg,rgba(30,16,56,.97),rgba(14,8,28,.98));border:1px solid var(--brd);border-top:none;display:flex;flex-direction:column;backdrop-filter:blur(20px)}
+.who-row{display:flex;gap:6px;padding:12px;overflow-x:auto;border-bottom:1px solid var(--line)}
+.who-chip{white-space:nowrap;font-size:12px;font-weight:700;padding:6px 11px;border-radius:999px;border:1px solid var(--brd);background:transparent;color:var(--muted);cursor:pointer}
+.who-chip.on{background:rgba(255,61,203,.16);color:#fff;border-color:var(--magenta)}
+.stream{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.bub{max-width:82%;padding:9px 13px;border-radius:14px;font-size:13.5px;line-height:1.45}
+.bub.them{align-self:flex-start;background:rgba(168,140,255,.12);border:1px solid var(--line);border-top-left-radius:3px}
+.bub.me{align-self:flex-end;background:linear-gradient(120deg,#ff3dcb,#7c3aed);border-top-right-radius:3px;color:#fff}
+.bub .nm{font-size:11px;font-weight:800;color:#ff8fe6;margin-bottom:3px}
+.chat-input{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}
+.chat-input input{flex:1;background:rgba(10,5,24,.6);border:1px solid var(--brd);color:#fff;padding:11px 14px;border-radius:12px;font-family:'Manrope';font-size:14px}
+.chat-input input:focus{outline:none;border-color:var(--magenta)}
+.chat-input button{border:none;background:linear-gradient(120deg,#ff3dcb,#7c3aed);color:#fff;font-weight:800;padding:0 18px;border-radius:12px;cursor:pointer}
+.note{font-size:11px;color:var(--muted);text-align:center;padding:0 14px 10px}
+footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-size:13px;text-align:center;margin-top:20px}
+.howto{background:var(--glass);border:1px solid var(--brd);border-radius:16px;padding:20px;margin-top:10px;font-size:13.5px;color:#ddd2f2}
+.howto b{color:#fff}
+@media(max-width:960px){.team{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:1fr}}
+@media(max-width:560px){.team{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
+<header><div class="wrap">
+  <div class="orb"></div>
+  <div class="brand">ПОКЕРОК<small>HQ</small></div>
+  <div class="live"><span class="dot"></span> Команда онлайн 24/7</div>
+</div></header>
+
+<div class="wrap">
+  <section class="hero">
+    <h1>Штаб команды</h1>
+    <p>Твой виртуальный отдел маркетинга, SMM, аналитики, медиа и стратегии. Они каждый день разбирают каналы и стримы, спорят на летучке и приносят тебе готовые решения.</p>
+    <div class="kpis">
+      <div class="kpi"><div class="n" id="k1">6</div><div class="l">сотрудников в строю</div></div>
+      <div class="kpi"><div class="n" id="k2">3</div><div class="l">канала под наблюдением</div></div>
+      <div class="kpi"><div class="n" id="k3">12</div><div class="l">предложений за день</div></div>
+      <div class="kpi"><div class="n" id="k4">09:05</div><div class="l">следующая летучка</div></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>👥 Сотрудники</h2>
+    <p class="sub">Кто за что отвечает и что предлагает прямо сейчас. Нажми «Написать», чтобы поставить задачу.</p>
+    <div class="grid team" id="teamGrid"></div>
+  </section>
+
+  <section class="sec">
+    <div class="cols">
+      <div class="panel">
+        <h3>📰 Лента предложений</h3>
+        <div id="feed"></div>
+      </div>
+      <div class="panel">
+        <h3>✉️ Сообщения тебе</h3>
+        <div id="messages"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>⚙️ Как это работает 24/7</h2>
+    <div class="howto">
+      <b>Каждый день в 09:05</b> команда сама запускается (запланированная задача), открывает каналы и стримы амбассадоров, проводит летучку с дебатами и складывает отчёты в папку <b>reports/</b>, а тебе присылает TL;DR с топ-3 действиями.<br><br>
+      <b>Чат справа внизу — живой ИИ.</b> Пиши любому сотруднику задачу или вопрос — он отвечает по-настоящему. Нажми 🔥 и задай тему летучки — вся команда обсудит её, споря между собой, а руководитель сведёт в итог с приоритетами P0/P1/P2.<br><br>
+      <b>Работает на твоём ключе.</b> Ответы генерирует ИИ через API-ключ, заданный на сервере (в переменных окружения). Ключ клиенту не виден.
+    </div>
+  </section>
+</div>
+
+<footer><div class="wrap">ПОКЕРОК HQ · виртуальный отдел развития бренда · рамка 18+, ответственная игра</div></footer>
+
+<!-- CHAT -->
+<div class="chat" id="chat">
+  <div class="chat-head" onclick="toggleChat()">💬 Чат с командой <span class="arr">▲</span></div>
+  <div class="chat-body">
+    <div class="who-row" id="whoRow"></div>
+    <div class="stream" id="stream"></div>
+    <div class="chat-input" style="border-bottom:1px solid var(--line)">
+      <input id="rtInput" placeholder="Тема летучки (команда поспорит)…" onkeydown="if(event.key==='Enter')runRoundtable()">
+      <button onclick="runRoundtable()" style="background:linear-gradient(120deg,#36e8a0,#0fbf86)">🔥</button>
+    </div>
+    <div class="chat-input">
+      <input id="chatInput" placeholder="Напиши сотруднику…" onkeydown="if(event.key==='Enter')sendMsg()">
+      <button onclick="sendMsg()">→</button>
+    </div>
+    <div class="note" id="chatNote">Живой ИИ-чат. Пиши сотруднику — или задай тему летучки 🔥, и команда обсудит её, споря между собой.</div>
+  </div>
+</div>
+
+<script>
+const TEAM = [
+  {id:'analytics',emoji:'📊',name:'Аналитик',role:'Данные · охваты · ER',resp:'Считает цифры, режет идеи без доказательств.',prop:{tag:'P0 · аналитика',txt:'Охваты канала Миши просели с 7.5K до 4K за неделю — нужен новый нарратив до спада.'}},
+  {id:'smm',emoji:'✍️',name:'SMM / Контент',role:'Tone of voice · рубрики',resp:'Контент-план, крючки, баланс 80/20.',prop:{tag:'P1 · контент',txt:'Ввести рубрики-сериалы «Раздача недели» и «Дорога на WSOP» — заходят лучше операционки.'}},
+  {id:'marketing',emoji:'🎯',name:'Маркетолог',role:'Воронка · офферы',resp:'Что/как/когда рекламировать, монетизация.',prop:{tag:'P0 · реклама',txt:'Привязать WSOP-ставки напрямую к ПОКЕРОК/PokerSwap, а не только к личному сайту.'}},
+  {id:'media',emoji:'🎬',name:'Медиа / Рост',role:'Форматы · виральность',resp:'Креатив, коллабы, growth-эксперименты.',prop:{tag:'P1 · рост',txt:'691 видео в архиве — почти нет нарезок в ленте. Запустить конвейер: 2 шортса со стрима.'}},
+  {id:'stream',emoji:'🎥',name:'Стрим-продюсер',role:'Эфиры · тренды · шортсы',resp:'Разбор стримов, идеи шортсов и эфиров.',prop:{tag:'P1 · стримы',txt:'Формат «покер + кодинг сайта» уникален на рынке — оформить в отдельную рубрику.'}},
+  {id:'strategy',emoji:'🧭',name:'Стратег',role:'Развитие бренда · роадмап',resp:'План Сейчас/Месяц/Квартал, крупные ставки.',prop:{tag:'P0 · стратегия',txt:'РФ-направление «не на деньги» легально рекламировать без оков азартки — главное окно.'}},
+];
+const FEED = [
+  {who:'🧭 Стратег',meta:'2 мин назад',pr:'p0',txt:'РФ соц-покер: игра не на деньги легальна и не подпадает под ст.27 ФЗ «О рекламе» — заходим в аудиторию BetBoom/Winline без рекламных оков.'},
+  {who:'📊 Аналитик',meta:'14 мин назад',pr:'p0',txt:'Нисходящий тренд охватов у Миши совпал с ростом промо-постов сайта. Гипотеза: разбавить контентом → ER вверх, 💩 вниз.'},
+  {who:'🎥 Стрим-продюсер',meta:'31 мин назад',pr:'p1',txt:'10 готовых идей шортсов из архива: тильт-камбэк −15k→+4k, миссклик в плюс, покер+кодинг, дорога на WSOP.'},
+  {who:'🎯 Маркетолог',meta:'48 мин назад',pr:'p0',txt:'Баунти «нокаут Миши на WSOP» через PokerSwap (промокод Inner) — главный оффер серии.'},
+  {who:'✍️ SMM',meta:'1 ч назад',pr:'p1',txt:'Контент-план на неделю готов: 7 постов с рубрикой, крючком и временем. Меньше «купи», больше истории.'},
+  {who:'🎬 Медиа / Рост',meta:'1 ч назад',pr:'p2',txt:'UGC-конкурс отзывов о сайте — органический пост зрителя собрал 5.6K. Масштабируем механику.'},
+];
+const MESSAGES = [
+  {emoji:'🧭',nm:'Стратег',txt:'Шеф, по РФ собрал стратегию: система амбассадоров по тирам, нативка и план роста на 3 фазы. Лежит в reports/. Готов обсудить условия.'},
+  {emoji:'📊',nm:'Аналитик',txt:'Внимание: охваты у главного амбассадора падают. Это не критично, но реагировать стоит сегодня — детали в отчёте.'},
+  {emoji:'🎥',nm:'Стрим-продюсер',txt:'Накидал 10 шортсов и 5 концепций стримов под WSOP. Если дашь ссылку на VOD — разберу конкретный эфир по таймкодам.'},
+  {emoji:'🎯',nm:'Маркетолог',txt:'Предлагаю на летучке зафиксировать правило 80/20 контент/оффер. SMM за, я частично против — нужен твой голос.'},
+];
+// рендер
+const grid=document.getElementById('teamGrid');
+TEAM.forEach(t=>{
+  const el=document.createElement('div');el.className='emp';
+  el.innerHTML=`<div class="top"><div class="av">${t.emoji}</div>
+    <div><h3>${t.name}</h3><div class="role">${t.role}</div><div class="stat"><span class="d"></span>онлайн</div></div></div>
+    <div class="resp">${t.resp}</div>
+    <div class="prop"><span class="tag">${t.prop.tag}</span>${t.prop.txt}</div>
+    <button class="talk" onclick="openWith('${t.id}')">Написать</button>`;
+  grid.appendChild(el);
+});
+const feed=document.getElementById('feed');
+FEED.forEach(f=>{const e=document.createElement('div');e.className='feed-item';
+  e.innerHTML=`<div class="who">${f.who}<span class="pr ${f.pr}">${f.pr.toUpperCase()}</span></div><div class="meta">${f.meta}</div><div class="txt">${f.txt}</div>`;feed.appendChild(e);});
+const msgs=document.getElementById('messages');
+MESSAGES.forEach(m=>{const e=document.createElement('div');e.className='msg';
+  e.innerHTML=`<div class="mav">${m.emoji}</div><div class="mb"><div class="nm">${m.nm}</div>${m.txt}</div>`;msgs.appendChild(e);});
+// chat
+let current='analytics';
+const whoRow=document.getElementById('whoRow');
+TEAM.forEach(t=>{const b=document.createElement('button');b.className='who-chip'+(t.id===current?' on':'');b.textContent=t.emoji+' '+t.name;b.onclick=()=>{current=t.id;[...whoRow.children].forEach(c=>c.classList.remove('on'));b.classList.add('on');greet();};whoRow.appendChild(b);});
+const stream=document.getElementById('stream');
+function emp(id){return TEAM.find(t=>t.id===id);}
+function addBub(txt,cls,nm){const b=document.createElement('div');b.className='bub '+cls;b.innerHTML=(nm?`<div class="nm">${nm}</div>`:'')+txt;stream.appendChild(b);stream.scrollTop=stream.scrollHeight;}
+function greet(){stream.innerHTML='';HISTORY[current]=[];const e=emp(current);addBub(`Привет, шеф! Я ${e.name.toLowerCase()}. ${e.resp} Что нужно — задача, разбор или идея?`,'them',e.emoji+' '+e.name);}
+let HISTORY={};        // история по каждому сотруднику
+let ACCESS='';         // пароль доступа (если требуется)
+function typing(nm){const b=document.createElement('div');b.className='bub them';b.innerHTML=`<div class="nm">${nm}</div><span class="typing">думает…</span>`;stream.appendChild(b);stream.scrollTop=stream.scrollHeight;return b;}
+async function ensureAccess(){
+  if(ACCESS)return true;
+  try{const r=await fetch('/api/agents');const d=await r.json();if(!d.passwordRequired)return true;}catch(e){}
+  const p=prompt('Введи пароль доступа к команде:');if(p){ACCESS=p;return true;}return false;
+}
+async function sendMsg(){
+  const i=document.getElementById('chatInput');const v=i.value.trim();if(!v)return;
+  if(!(await ensureAccess()))return;
+  addBub(v,'me');i.value='';
+  const e=emp(current);const t=typing(e.emoji+' '+e.name);
+  HISTORY[current]=HISTORY[current]||[];
+  try{
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json','x-access-password':ACCESS},body:JSON.stringify({agentId:current,message:v,history:HISTORY[current]})});
+    const d=await r.json();t.remove();
+    if(d.error){addBub('⚠️ '+d.error,'them',e.emoji+' '+e.name);return;}
+    addBub(d.reply,'them',e.emoji+' '+e.name);
+    HISTORY[current].push({role:'user',content:v});HISTORY[current].push({role:'assistant',content:d.reply});
+  }catch(err){t.remove();addBub('⚠️ Сеть недоступна. Сервер запущен?','them',e.emoji+' '+e.name);}
+}
+async function runRoundtable(){
+  const inp=document.getElementById('rtInput');const topic=(inp.value||'').trim();if(!topic){inp.focus();return;}
+  if(!(await ensureAccess()))return;
+  inp.value='';document.getElementById('chat').classList.add('open');
+  addBub('🔥 Летучка: «'+topic+'»','me');
+  const t=typing('🧠 Команда совещается');
+  try{
+    const r=await fetch('/api/roundtable',{method:'POST',headers:{'Content-Type':'application/json','x-access-password':ACCESS},body:JSON.stringify({topic})});
+    const d=await r.json();t.remove();
+    if(d.error){addBub('⚠️ '+d.error,'them','🧠');return;}
+    d.turns.forEach(tr=>addBub(tr.text,tr.isLead?'me':'them',tr.emoji+' '+tr.name+(tr.isLead?' · ИТОГ':'')));
+  }catch(err){t.remove();addBub('⚠️ Сеть недоступна. Сервер запущен?','them','🧠');}
+}
+function openWith(id){current=id;[...whoRow.children].forEach((c,i)=>c.classList.toggle('on',TEAM[i].id===id));document.getElementById('chat').classList.add('open');greet();document.getElementById('chatInput').focus();}
+function toggleChat(){document.getElementById('chat').classList.toggle('open');}
+greet();
+</script>
+</body>
+</html>
+             
