@@ -32,6 +32,11 @@ async function callClaude(system, messages, maxTokens = 600) {
   if (!API_KEY) {
     return '⚠️ ИИ не подключён: на сервере не задан ANTHROPIC_API_KEY. Это демо-ответ. Добавь ключ в переменные окружения — и я заговорю по-настоящему.';
   }
+  const body = { model: MODEL, max_tokens: maxTokens, system, messages };
+  // веб-поиск: даём агентам доступ в интернет (можно выключить WEB_SEARCH=off)
+  if (process.env.WEB_SEARCH !== 'off') {
+    body.tools = [{ type: 'web_search_20250305', name: 'web_search', max_uses: 5 }];
+  }
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -39,14 +44,16 @@ async function callClaude(system, messages, maxTokens = 600) {
       'anthropic-version': '2023-06-01',
       'content-type': 'application/json'
     },
-    body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, system, messages })
+    body: JSON.stringify(body)
   });
   const data = await r.json();
   if (!r.ok) {
     console.error('Anthropic error', data);
     return '⚠️ Ошибка ИИ: ' + (data.error && data.error.message ? data.error.message : 'неизвестно');
   }
-  return (data.content && data.content[0] && data.content[0].text) || '(пустой ответ)';
+  // ответ может содержать блоки веб-поиска — собираем все текстовые блоки
+  const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n').trim();
+  return text || '(пустой ответ)';
 }
 
 app.get('/api/agents', (req, res) => {
